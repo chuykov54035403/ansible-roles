@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: deploy_docker
+  namespace: chuykovma
+  author: chuykovma
+  description: Deploy docker
+  license: MIT
+  min_ansible_version: '2.18'
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"

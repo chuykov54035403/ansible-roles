@@ -1,0 +1,5 @@
+---
+postgresql_db_name: bi_golos_site
+postgresql_user: bi_site
+postgresql_password: "TestTest123!"
+postgresql_encoding: UTF8

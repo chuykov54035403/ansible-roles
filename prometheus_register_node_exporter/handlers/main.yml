@@ -1,0 +1,7 @@
+---
+- name: Restart Prometheus
+  delegate_to: "{{ prometheus_host }}"
+  become: true
+  ansible.builtin.systemd:
+    name: prometheus
+    state: restarted

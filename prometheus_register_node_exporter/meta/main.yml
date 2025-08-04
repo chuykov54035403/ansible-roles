@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: prometheus_register_node_exporter
+  namespace: chuykovma
+  author: chuykovma
+  description: Роль для добвления нового node_exporter в мониторинг Prometheus
+  license: MIT
+  min_ansible_version: '2.18'
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"

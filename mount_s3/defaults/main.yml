@@ -1,0 +1,8 @@
+---
+user_name: user_name
+file_name: file_name
+credential_file_path: credential_file_path
+access_key_id: access_key_id
+secret_access_key: secret_access_key
+s3_bucket_name: s3_bucket_name
+s3_url: s3_url

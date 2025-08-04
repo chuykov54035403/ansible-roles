@@ -1,0 +1,34 @@
+---
+image: harbor.hutnet.ru/ansible-env/ansible-molecule-env:25.4.0
+
+stages:
+  - lint
+  - test
+
+variables:
+  ANSIBLE_FORCE_COLOR: "1"
+  PY_COLORS: "1"
+
+before_script:
+  - pip install -U pip setuptools wheel
+  - export PROXMOX_API_HOST="10.10.1.10:8006"
+  - export PROXMOX_API_USER="root@pam"
+  - export PROXMOX_API_TOKEN_ID="api"
+  - export PROXMOX_API_TOKEN_SECRET="c2e67989-3ee7-4898-8d72-a9bbb9890b02"
+  - export PROXMOX_NODE="srv-pve01"
+  - export TEMPLATE_NAME="Molecule-Ubuntu-24.04"
+  - export TEMPLATE_ID="123"
+
+lint:
+  stage: lint
+  script:
+    - pip install --upgrade yamllint ansible-lint
+    - yamllint .
+    - ansible-lint .
+
+test:
+  stage: test
+  script:
+    - pip install --upgrade yamllint ansible-lint
+    - pip install ansible "molecule==25.4.0" "molecule-plugins" proxmoxer jmespath
+    - molecule test

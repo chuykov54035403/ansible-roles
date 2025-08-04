@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: system_update
+  namespace: chuykovma
+  author: chuykovma
+  description: System update
+  license: MIT
+  min_ansible_version: '2.18'
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"

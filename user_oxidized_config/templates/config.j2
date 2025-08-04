@@ -1,0 +1,54 @@
+---
+rest: 0.0.0.0:8888
+username: oxi
+password: oxipass
+model: routeros
+resolve_dns: true
+interval: 86400
+use_syslog: false
+debug: false
+run_once: false
+threads: 30
+use_max_threads: false
+timeout: 60
+retries: 3
+prompt: !ruby/regexp /^([\w.@-]+[#>]\s?)$/
+next_adds_job: false
+vars: {}
+groups: {}
+group_map: {}
+models: {}
+pid: "/home/{{ user_name }}/.config/oxidized/pid"
+crash:
+  directory: "/home/{{ user_name }}/.config/oxidized/crashes"
+  hostnames: false
+stats:
+  history_size: 10
+input:
+  default: ssh, telnet
+  debug: false
+  ssh:
+    secure: false
+  ftp:
+    passive: true
+  utf8_encoded: true
+output:
+  default: file
+  file:
+    directory: "/home/{{ user_name }}/.config/oxidized/configs"
+source:
+  default: csv
+  csv:
+    file: "/home/{{ user_name }}/.config/oxidized/router.db"
+    delimiter: !ruby/regexp /:/
+    map:
+      name: 0
+      ip: 1
+      username: 2
+      password: 3
+      model: 4
+      port: 5
+model_map:
+  juniper: junos
+  cisco: ios
+remove_secret: true

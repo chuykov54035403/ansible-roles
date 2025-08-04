@@ -1,0 +1,5 @@
+---
+roles:
+  - name: install_postgresql
+    src: git+ssh://git@gitlab.hutnet.ru/ansible-roles/install_postgresql.git
+    version: main

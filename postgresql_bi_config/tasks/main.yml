@@ -1,0 +1,66 @@
+---
+- name: Include install_postgresql role
+  ansible.builtin.include_role:
+    name: install_postgresql
+
+- name: Ensure psycopg2 installed via APT
+  become: true
+  ansible.builtin.apt:
+    name: python3-psycopg2
+    state: present
+
+- name: Install ACL
+  become: true
+  ansible.builtin.apt:
+    name: acl
+    state: present
+
+- name: Ensure PostgreSQL database exists
+  community.postgresql.postgresql_db:
+    name: "{{ postgresql_db_name }}"
+    encoding: "{{ postgresql_encoding }}"
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Ensure PostgreSQL user exists
+  community.postgresql.postgresql_user:
+    name: "{{ postgresql_user }}"
+    password: "{{ postgresql_password }}"
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Grant CONNECT and CREATE privileges on database to user
+  community.postgresql.postgresql_privs:
+    db: "{{ postgresql_db_name }}"
+    roles: "{{ postgresql_user }}"
+    type: database
+    privs: "CONNECT,CREATE"
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Set default privileges on future tables in public schema
+  community.postgresql.postgresql_privs:
+    db: "{{ postgresql_db_name }}"
+    schema: public
+    type: default_privs
+    objs: tables
+    roles: "{{ postgresql_user }}"
+    privs: "SELECT,INSERT,UPDATE,DELETE"
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Set default privileges on future sequences in public schema
+  community.postgresql.postgresql_privs:
+    db: "{{ postgresql_db_name }}"
+    schema: public
+    type: default_privs
+    objs: sequences
+    roles: "{{ postgresql_user }}"
+    privs: "USAGE,SELECT"
+    state: present
+  become: true
+  become_user: postgres

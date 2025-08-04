@@ -1,0 +1,3 @@
+---
+docker_offline_package_dir: "docker-packages"
+docker_offline_target_dir: "/tmp/docker-packages"

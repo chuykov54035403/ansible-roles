@@ -1,0 +1,25 @@
+---
+# Путь к GitLab репозиторию в формате "group/project"
+repo_path: "TwitchRecorder/TwitchRecorder"
+
+# Путь клонирования репозиторя на хосте
+repo_dest_path: "/home/ubuntu/twitchrecorder"
+
+# Клонируемая ветка
+repo_branch: "main"
+
+# Vault путь к секрету
+vault_gitlab_token_path: "secret/data/projects/twitchrecorder/dev"
+
+# Vault имя поля в секрете
+vault_gitlab_token_field: "ssh_private_key"
+
+# Префикс домена GitLab без https:// и без auth — пример: gitlab.example.com
+gitlab_url_prefix: "gitlab.hutnet.ru"
+
+# Кому должны принадлежать файлы после клонирования
+repo_owner: "ubuntu"
+repo_group: "ubuntu"
+
+# Параметр отвечающий за удаление ssh ключа после клонирования репозитория
+remove_ssh_key_after_use: false

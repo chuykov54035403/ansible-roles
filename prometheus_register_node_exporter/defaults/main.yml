@@ -1,0 +1,3 @@
+---
+prometheus_host: 10.10.1.18           # Имя хоста Prometheus-сервера из инвентаря
+job_name: molecule-test-servers              # Название job, куда добавить target

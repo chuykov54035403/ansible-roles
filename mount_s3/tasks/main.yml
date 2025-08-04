@@ -1,0 +1,91 @@
+---
+- name: Install s3fs
+  ansible.builtin.apt:
+    name: s3fs
+    state: present
+
+- name: Check if credential file exists
+  ansible.builtin.stat:
+    path: "{{ credential_file_path }}"
+  register: cred_file_stat
+
+- name: Create credential file if absent
+  ansible.builtin.file:
+    path: "{{ credential_file_path }}"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0600'
+    state: touch
+  when: not cred_file_stat.stat.exists
+
+- name: Add credential in file
+  ansible.builtin.lineinfile:
+    path: "{{ credential_file_path }}"
+    line: "{{ access_key_id }}:{{ secret_access_key }}"
+
+- name: Check if mount point is mounted
+  ansible.builtin.command: mountpoint -q /mnt/{{ s3_bucket_name }}
+  register: mount_check
+  changed_when: false
+  failed_when: false
+
+- name: Create mount point
+  ansible.builtin.file:
+    path: "/mnt/{{ s3_bucket_name }}"
+    state: directory
+    mode: '0755'
+  when: mount_check.rc != 0
+
+- name: Get user info
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ user_name }}"
+  register: passwd_entry
+
+- name: Show UID and GID
+  ansible.builtin.debug:
+    msg: >
+      UID={{ passwd_entry.ansible_facts.getent_passwd[user_name][1] }},
+      GID={{ passwd_entry.ansible_facts.getent_passwd[user_name][2] }}
+
+- name: Compose S3FS mount options
+  ansible.builtin.set_fact:
+    s3fs_fstab_entry: >-
+      s3fs#{{ s3_bucket_name }} /mnt/{{ s3_bucket_name }} fuse {{
+        [
+          "_netdev",
+          "allow_other",
+          "passwd_file=" + credential_file_path,
+          "use_path_request_style",
+          "url=" + s3_url,
+          "uid=" + (passwd_entry.ansible_facts.getent_passwd[user_name][1] | string),
+          "gid=" + (passwd_entry.ansible_facts.getent_passwd[user_name][2] | string)
+        ] | join(',') }} 0 0
+
+- name: Add connection string to fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "{{ s3fs_fstab_entry }}"
+
+- name: Compose S3FS mount options for mount module
+  ansible.builtin.set_fact:
+    s3fs_mount_opts: >-
+      {{
+        [
+          "_netdev",
+          "allow_other",
+          "passwd_file=" + credential_file_path,
+          "use_path_request_style",
+          "url=" + s3_url,
+          "uid=" + (passwd_entry.ansible_facts.getent_passwd[user_name][1] | string),
+          "gid=" + (passwd_entry.ansible_facts.getent_passwd[user_name][2] | string)
+        ] | join(',')
+      }}
+
+- name: Mount S3 bucket
+  ansible.posix.mount:
+    path: "/mnt/{{ s3_bucket_name }}"
+    src: "s3fs#{{ s3_bucket_name }}"
+    fstype: fuse
+    opts: "{{ s3fs_mount_opts }}"
+    state: mounted

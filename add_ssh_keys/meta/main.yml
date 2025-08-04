@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: add_ssh_keys
+  namespace: chuykovma
+  author: chuykovma
+  description: Роль для добавления ssh ключей
+  license: MIT
+  min_ansible_version: '2.18'
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"

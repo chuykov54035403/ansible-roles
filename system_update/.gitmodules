@@ -1,0 +1,3 @@
+[submodule "molecule-proxmox-template"]
+	path = molecule-proxmox-template
+	url = https://10.10.1.7/ansible-templates/molecule-proxmox-template.git

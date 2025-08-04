@@ -1,0 +1,17 @@
+---
+user_name: ubuntu
+env_vault_path: "secret/data/projects/twitchrecorder/dev"
+project_path: /home/ubuntu
+database_type: "postgresql"
+recorder_host: "http://streamrecorder:8000"
+db_host: "postgres"
+db_port: "5432"
+kafka_cluster_id: "6be7bfb4-9c9c-4f43-89f3-f534d234f1b6"
+archive_catalog: "/mnt/s3-bucket"
+wordpress_db_host: "wordpress-db:3306"
+wordpress_site_url: https://10.10.1.100
+wp_api_url: https://10.10.1.100/wp-json/wp/v2
+s3_bucket_name: test-bucket
+publisher_host: http://publisher:8008
+kafka_broker: kafka:9092
+watermark_text: TwitchRecorder

@@ -1,0 +1,11 @@
+---
+- name: Add file_sd target file for this host
+  delegate_to: "{{ prometheus_host }}"
+  become: true
+  ansible.builtin.template:
+    src: node_target.yml.j2
+    dest: "/etc/prometheus/file_sd/{{ inventory_hostname }}.yml"
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+  notify: Restart Prometheus

@@ -1,0 +1,47 @@
+---
+image: harbor.hutnet.ru/ansible-env/ansible-molecule-env:25.4.0
+
+include:
+  - component: $CI_SERVER_FQDN/components/ansible/molecule-proxmox-role-lint@main
+
+  - component: $CI_SERVER_FQDN/components/ansible/molecule-proxmox-role-test@main
+    inputs:
+      proxmox_node: "srv-pve01"
+      template_name: "Molecule-Ubuntu-24.04"
+      template_id: "123"
+      job_name: "test-ubuntu-24.04"
+      stage: "test-ubuntu-24.04"
+      molecule_vars: $MOLECULE_VARS
+
+
+variables:
+  ANSIBLE_FORCE_COLOR: "1"
+  PY_COLORS: "1"
+
+before_script:
+  - export VAULT_ADDR="https://vault.hutnet.ru"
+  - export VAULT_TOKEN=$VAULT_TOKEN
+  - export user_name="ubuntu"
+  - export file_name=".passwd-s3"
+  - export credential_file_path="/home/{{ user_name }}/{{ file_name }}"
+  - export access_key_id=$(vault kv get -field=s3_access_key_id secret/projects/twitchrecorder/molecule)
+  - export secret_access_key=$(vault kv get -field=s3_secret_access_key secret/projects/twitchrecorder/molecule)
+  - export s3_bucket_name=$(vault kv get -field=s3_bucket_name secret/projects/twitchrecorder/molecule)
+  - export s3_url=$(vault kv get -field=s3_url secret/projects/twitchrecorder/molecule)
+
+  # Формирование переменной molecule_vars
+  - |
+    MOLECULE_VARS=$(printf '%s\n' \
+        "access_key_id: \"$access_key_id\"" \
+        "secret_access_key: \"$secret_access_key\"" \
+        "s3_bucket_name: \"$s3_bucket_name\"" \
+        "s3_url: \"$s3_url\"" \
+        "user_name: \"$user_name\"" \
+        "file_name: \"$file_name\"" \
+        "credential_file_path: \"$credential_file_path\"")
+    export MOLECULE_VARS
+    echo "$MOLECULE_VARS"
+
+stages:
+  - lint
+  - test-ubuntu-24.04

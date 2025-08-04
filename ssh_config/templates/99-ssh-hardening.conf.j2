@@ -1,0 +1,14 @@
+# Ansible-managed SSH hardening configuration
+# Applies security-focused overrides to OpenSSH daemon
+# Do not edit manually – changes will be overwritten by Ansible
+
+Port {{ ssh_port }}
+PermitRootLogin {{ permit_root_login }}
+PubkeyAuthentication {{ pubkey_authentication }}
+PasswordAuthentication {{ password_authentication }}
+PermitEmptyPasswords {{ permit_empty_passwords }}
+ClientAliveInterval {{ client_alive_interval }}
+ClientAliveCountMax {{ client_alive_count_max }}
+UseDNS {{ use_dns }}
+MaxAuthTries {{ max_auth_tries }}
+LoginGraceTime {{ login_grace_time }}

@@ -1,0 +1,5 @@
+- targets:
+    - "{{ ansible_host }}:9100"
+  labels:
+    job: {{ job_name | quote }}
+    instance: {{ inventory_hostname | quote }}

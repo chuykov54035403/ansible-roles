@@ -1,0 +1,24 @@
+---
+- name: Copy oxidized_config
+  ansible.builtin.copy:
+    src: oxidized_config
+    dest: "/home/{{ user_name }}"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '755'
+
+- name: Copy oxidized config file
+  ansible.builtin.template:
+    src: config.j2
+    dest: "/home/{{ user_name }}/oxidized_config/config"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0644'
+
+- name: Copy docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.j2
+    dest: "/home/{{ user_name }}/docker-compose.yml"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0644'

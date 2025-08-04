@@ -1,0 +1,56 @@
+---
+- name: Install git
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: Lookup ssh private key from Vault
+  ansible.builtin.set_fact:
+    ssh_private_key: >-
+      {{ lookup('community.hashi_vault.hashi_vault',
+                'secret={{ vault_gitlab_token_path }}:{{ vault_gitlab_token_field }}') }}
+  delegate_to: localhost
+
+- name: Copy the SSH key to the server
+  ansible.builtin.copy:
+    content: "{{ ssh_private_key }}"
+    dest: "/root/.ssh/ssh_private_key"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Add GitLab to known_hosts
+  ansible.builtin.known_hosts:
+    name: "{{ gitlab_url_prefix }}"
+    key: "{{ lookup('pipe', 'ssh-keyscan {{ gitlab_url_prefix }}') }}"
+    path: "/root/.ssh/known_hosts"
+
+- name: Make sure that the git path is safe (safe.directory)
+  ansible.builtin.command:
+    cmd: "git config --global --add safe.directory {{ repo_dest_path }}"
+  become: true
+  changed_when: false
+  tags:
+    - skip_ansible_lint
+
+- name: Clone a repository with submodules using SSH
+  ansible.builtin.git:
+    repo: "git@{{ gitlab_url_prefix }}:{{ repo_path }}.git"
+    dest: "{{ repo_dest_path }}"
+    version: main
+    recursive: true
+    key_file: "/root/.ssh/ssh_private_key"
+
+- name: Set ownership recursively on all files and directories
+  ansible.builtin.file:
+    path: "{{ repo_dest_path }}"
+    owner: "{{ repo_owner }}"
+    group: "{{ repo_group }}"
+    recurse: true
+  changed_when: false
+
+- name: Remove SSH key if enabled
+  ansible.builtin.file:
+    path: "/root/.ssh/ssh_private_key"
+    state: absent
+  when: remove_ssh_key_after_use

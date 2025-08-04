@@ -1,0 +1,16 @@
+---
+- name: Ensure ~/.ssh exists for each user
+  ansible.builtin.file:
+    path: "/home/{{ item.name }}/.ssh"
+    state: directory
+    mode: '0700'
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+  loop: "{{ ssh_authorized_users }}"
+
+- name: Add authorized keys for each user
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1 }}"
+    manage_dir: false
+  loop: "{{ ssh_authorized_users | subelements('keys') }}"

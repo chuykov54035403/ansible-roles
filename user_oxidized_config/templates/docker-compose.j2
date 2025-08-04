@@ -1,0 +1,41 @@
+version: '3'
+services:
+  oxidized:
+    container_name: oxidized
+    restart: always
+    image: oxidized/oxidized:latest
+    ports:
+      - 8888:8888/tcp
+    environment:
+      CONFIG_RELOAD_INTERVAL: 600
+    volumes:
+       - /home/{{ user_name }}/oxidized_config:/home/oxidized/.config/oxidized/
+    networks:
+      - oxidized_network
+
+  oxidized-web:
+    container_name: oxidized-web 
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/nginx:/etc/nginx
+      - /var/log/nginx:/var/log/nginx
+    depends_on:
+      - oxidized
+    networks:
+      - oxidized_network
+
+  # netshoot:
+  #   container_name: netshoot
+  #   image: nicolaka/netshoot
+  #   restart: always
+  #   command: sleep infinity
+  #   networks:
+  #     - oxidized_network  
+
+networks:
+  oxidized_network:
+    driver: bridge

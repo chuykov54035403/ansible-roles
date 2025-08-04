@@ -1,0 +1,8 @@
+---
+- name: Generate .env file from Vault and default vars
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ project_path }}/.env"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: '0600'

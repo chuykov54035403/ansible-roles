@@ -1,0 +1,23 @@
+---
+
+image: harbor.hutnet.ru/ansible-env/ansible-molecule-env:25.4.0
+
+include:
+  - component: $CI_SERVER_FQDN/components/ansible/molecule-proxmox-role-lint@main
+
+  - component: $CI_SERVER_FQDN/components/ansible/molecule-proxmox-role-test@main
+    inputs:
+      proxmox_node: "srv-pve01"
+      template_name: "Molecule-Ubuntu-24.04"
+      template_id: "123"
+      job_name: "test-ubuntu-24.04"
+      stage: "test-ubuntu-24.04"
+
+variables:
+  ANSIBLE_FORCE_COLOR: "1"
+  PY_COLORS: "1"
+
+stages:
+  - lint
+  - test-ubuntu-24.04
+

@@ -1,0 +1,39 @@
+---
+- name: Ensure target directory exists
+  ansible.builtin.file:
+    path: "{{ docker_offline_target_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy .deb packages to target machine
+  ansible.builtin.copy:
+    src: "{{ docker_offline_package_dir }}/"
+    dest: "{{ docker_offline_target_dir }}/"
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Find all .deb packages
+  ansible.builtin.find:
+    paths: "{{ docker_offline_target_dir }}"
+    patterns: "*.deb"
+  register: found_debs
+
+- name: Sort .deb packages in correct dependency order
+  ansible.builtin.set_fact:
+    sorted_debs: >-
+      {{
+        [
+          (found_debs.files | selectattr('path', 'search', 'containerd.io') | list | first).path,
+          (found_debs.files | selectattr('path', 'search', 'docker-ce-cli') | list | first).path,
+          (found_debs.files | selectattr('path', 'search', 'docker-ce_') | list | first).path,
+          (found_debs.files | selectattr('path', 'search', 'docker-buildx-plugin') | list | first).path,
+          (found_debs.files | selectattr('path', 'search', 'docker-compose-plugin') | list | first).path
+        ]
+      }}
+
+- name: Install Docker .deb packages in correct order
+  ansible.builtin.apt:
+    deb: "{{ item }}"
+    state: present
+  loop: "{{ sorted_debs }}"

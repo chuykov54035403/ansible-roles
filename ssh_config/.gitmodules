@@ -1,0 +1,4 @@
+
+[submodule "molecule-template"]
+	path = molecule-template
+	url = git@10.10.1.7:ansible-templates/molecule-template.git

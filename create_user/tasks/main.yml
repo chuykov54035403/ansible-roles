@@ -1,0 +1,18 @@
+---
+- name: Check if user exists
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ user_name }}"
+  register: user_check
+  failed_when: false
+  changed_when: false
+
+- name: Create user and add to sudo group
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    shell: /bin/bash
+    create_home: true
+    password: "{{ user_password }}"
+    groups: sudo
+    append: true
+  when: not user_check.found | default(false)

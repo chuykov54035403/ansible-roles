@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: nginx_oxidized_config
+  namespace: chuykovma
+  author: chuykovma
+  description: Copying nginx configuration files for oxidized
+  license: MIT
+  min_ansible_version: '2.18'
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "noble"
